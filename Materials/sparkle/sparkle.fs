@@ -20,7 +20,7 @@
             "TYPE": "float",
             "MIN": 0.0,
             "MAX": 1.0,
-            "DEFAULT": 0.33
+            "DEFAULT": 0.167
         },
         {
             "LABEL": "Public/Speed",
@@ -48,7 +48,7 @@
             "TYPE": "float",
             "MIN": 0.0,
             "MAX": 0.05,
-            "DEFAULT": 0.0
+            "DEFAULT": 0.007
         },
         {
             "LABEL": "Private/Step",
@@ -64,7 +64,7 @@
             "TYPE": "float",
             "MIN": 0.0,
             "MAX": 1.0,
-            "DEFAULT": 0.0
+            "DEFAULT": 0.040
         },
         {
             "LABEL": "Private/Speed Y",
