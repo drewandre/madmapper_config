@@ -48,7 +48,7 @@
             "TYPE": "float",
             "MIN": 0.0,
             "MAX": 0.05,
-            "DEFAULT": 0.0025
+            "DEFAULT": 0.0
         },
         {
             "LABEL": "Private/Step",
@@ -178,14 +178,14 @@ vec4 materialColorForPixel(vec2 texCoord)
     vec2 brickSize      = vec2(0.1, 0.1) * internalScale;
 	const float offset  = 0.5;
 
-	texCoord.y += internalYOffset;
+	texCoord.y -= internalYOffset;
 
     if(mod(texCoord.y / brickSize.y, stepper) < 1){
         p.x += (offset * brickSize.x);
     }
 
 	p.x += offsetX;
-	p.y += internalYOffset;
+	p.y -= internalYOffset;
 
     p = repeat(p, brickSize, vec2(0), vec2(2), cellId);
     float dist = rectangle(p, brickSize * 0.5);

@@ -144,7 +144,7 @@ vec4 materialColorForPixel(vec2 texCoord)
 	float internalScale = scale * 3.0;
 
     // Calculate UVs
-    vec3 uv = vec3(vec2(0.5) + (texCoord-vec2(0.5)) * internalScale * internalScale + vec2(0.0, ytime), ztime);
+    vec3 uv = vec3(vec2(0.5) + (texCoord-vec2(0.5)) * internalScale * internalScale + vec2(0.0, -ytime), ztime);
 
     // Simplex Noise
     float n = billowedNoise(uv);
