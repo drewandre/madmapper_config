@@ -74,6 +74,14 @@
             "MAX": 1.0,
             "DEFAULT": 0.05
         },
+		{
+            "LABEL": "Private/Amplitude",
+            "NAME": "amplitude",
+            "TYPE": "float",
+            "MIN": 0.0,
+            "MAX": 1.0,
+            "DEFAULT": 0.2
+        },
         {
             "LABEL": "Private/Audio Attack",
             "NAME": "attack",
@@ -190,15 +198,17 @@ vec4 materialColorForPixel(vec2 texCoord)
     p = repeat(p, brickSize, vec2(0), vec2(2), cellId);
     float dist = rectangle(p, brickSize * 0.5);
 
+	vec4 mutableBackgroundColor = backgroundColor.rgba;
+
 	vec4 fillColor = foregroundColor * billowedNoise(vec3(cellId, ztime));
 
-	fillColor.r *= 1.0 + audio_amplitude_decay;
-	fillColor.g *= 1.0 + audio_amplitude_decay;
-	fillColor.b *= 1.0 + audio_amplitude_decay;
+	fillColor.r *= 1.0 + (audio_amplitude_decay * (amplitude * 15));
+	fillColor.g *= 1.0 + (audio_amplitude_decay * (amplitude * 15));
+	fillColor.b *= 1.0 + (audio_amplitude_decay * (amplitude * 15));
 	fillColor.a = easeInOutQuart(fillColor.a);
 
-    vec4 color = fill(vec4(0), getColor(backgroundColor.rgba, fillColor.rgba), dist);
-	color = stroke(color, backgroundColor.rgba, dist, size);
+    vec4 color = fill(vec4(0), getColor(mutableBackgroundColor.rgba, fillColor.rgba), dist);
+	color = stroke(color, mutableBackgroundColor.rgba, dist, size);
 
     return vec4(color);
 }
