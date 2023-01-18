@@ -46,9 +46,9 @@
 			"LABEL": "Public/Brightness",
 			"NAME": "brightness",
 			"TYPE": "float",
-			"MIN": -1.0,
+			"MIN": 0,
 			"MAX": 1.0,
-			"DEFAULT": 0
+			"DEFAULT": 0.5
 		},
 		{
 			"LABEL": "Public/Saturation",
@@ -197,10 +197,10 @@ vec4 materialColorForPixel(vec2 texCoord)
 	vec4 frontColor = getColor(mutableForegroundColor.rgba, backgroundColor.rgba);
 
 	vec4 backColor  = getColor(backgroundColor.rgba, mutableForegroundColor.rgba);
-	backColor = applyColorMods(backColor, contrast, saturation, brightness);
+	backColor = applyColorMods(backColor, contrast, saturation, 1);
 
     // Interpolate Color
     vec4 color      = mix(backColor.rgba, frontColor.rgba, n);
- 
-    return color;
+ 	color *= vec4(brightness);
+	return vec4(color.rgb, 1);
 }

@@ -24,9 +24,9 @@
 			"LABEL": "Public/Brightness",
 			"NAME": "brightness",
 			"TYPE": "float",
-			"MIN": -1.0,
+			"MIN": 0,
 			"MAX": 1.0,
-			"DEFAULT": 0
+			"DEFAULT": 0.5
 		},
 		{
 			"LABEL": "Public/Saturation",
@@ -201,9 +201,10 @@ vec4 materialColorForPixel( vec2 texCoord )
 	color.g *= 1.0 + (1.0 * audio_amplitude_decay * (amplitude * 15));
 	color.b *= 1.0 + (1.0 * audio_amplitude_decay * (amplitude * 15));
 
-	color = applyColorMods(color, contrast, saturation, brightness);
+	color = applyColorMods(color, contrast, saturation, 1);
 
-	color = mix(color, backgroundColor.rgba, 0.6);
+	color = mix(color, backgroundColor.rgba, 0.5);
 	
-	return color;
+	color *= vec4(brightness);
+	return vec4(color.rgb, 1);
 }

@@ -46,17 +46,17 @@
 			"LABEL": "Public/Brightness",
 			"NAME": "brightness",
 			"TYPE": "float",
-			"MIN": -1.0,
+			"MIN": 0,
 			"MAX": 1.0,
-			"DEFAULT": 0
+			"DEFAULT": 0.5
 		},
 		{
 			"LABEL": "Public/Saturation",
 			"NAME": "saturation",
 			"TYPE": "float",
-			"MIN": 0.0,
+			"MIN": -1.0,
 			"MAX": 1.0,
-			"DEFAULT": 1.0
+			"DEFAULT": 0
 		},
         {
             "LABEL": "Private/Speed Y",
@@ -232,9 +232,7 @@ vec4 materialColorForPixel(vec2 texCoord)
     vec4 color = fill(vec4(0), getColor(mutableBackgroundColor.rgba, fillColor.rgba), dist);
 	color = stroke(color, mutableBackgroundColor.rgba, dist, size);
 
-	vec4 out_color = color;
-
-	out_color += vec4(brightness);
-
-    return out_color;
+	color = applyColorMods(color, 0.5, saturation, 0);
+ 	color *= vec4(brightness);
+	return vec4(color.rgb, 1);
 }

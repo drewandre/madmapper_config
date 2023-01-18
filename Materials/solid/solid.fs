@@ -16,10 +16,20 @@
             "TYPE": "color",
             "DEFAULT": [ 1.0, 1.0, 1.0, 1.0 ]
 		},
+		{
+			"LABEL": "Public/Brightness",
+			"NAME": "brightness",
+			"TYPE": "float",
+			"MIN": 0,
+			"MAX": 1.0,
+			"DEFAULT": 0.5
+		},
     ]
 }*/
 
 vec4 materialColorForPixel( vec2 texCoord )
 {
-	return foregroundColor.rgba;
+	vec3 mutableForegroundColor = foregroundColor.rgb;
+	mutableForegroundColor *= vec3(brightness);
+	return vec4(mutableForegroundColor.rgb, 1);
 }

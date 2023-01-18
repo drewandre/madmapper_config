@@ -21,9 +21,9 @@
 			"LABEL": "Public/Brightness",
 			"NAME": "brightness",
 			"TYPE": "float",
-			"MIN": -1.0,
+			"MIN": 0,
 			"MAX": 1.0,
-			"DEFAULT": 0
+			"DEFAULT": 0.5
 		},
 		{
 			"LABEL": "Public/Saturation",
@@ -162,18 +162,20 @@ vec4 materialColorForPixel( vec2 texCoord )
 	float time = animation_time*0.1;
 
 	vec3 p = vec3(uv,time) / (1 - audio_amplitude_decay);
-	vec3 axis = 4. * fbm(p, 0.5, 1.6);	
+	vec3 axis = 4. * fbm(p, 0.5, 1.6);
 	
 	vec3 color = 0.5 * 5. * fbm(p*0.3,0.5,1.6);	
 	color = rotation(3.*length(axis),normalize(axis))*color;
-	color = applyContrastSaturationBrightness(color, 1 + contrast, 1 + saturation, 1 + brightness);
+	color = applyContrastSaturationBrightness(color, 1 + contrast, 1 + saturation, 1);
 
 	vec3 color_2  = color * 0.05;
-	color_2 = applyContrastSaturationBrightness(color_2, 1 + contrast, 1 + saturation, 1 + brightness);
+	color_2 = applyContrastSaturationBrightness(color_2, 1 + contrast, 1 + saturation, 1);
 
 	color_2 = pow(color_2,vec3(0.12));
 	color_2 *= 2.0 * color_2;
-	color = mix(color,color_2,uMilk);	
+	color = mix(color,color_2,uMilk);
 
-	return vec4(color,1.0);
+	color *= vec3(brightness);
+
+	return vec4(color.rgb, 1);
 }
