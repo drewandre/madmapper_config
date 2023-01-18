@@ -161,15 +161,19 @@ vec4 materialColorForPixel( vec2 texCoord )
 	vec2 uv = texCoord*uScale*0.1;
 	float time = animation_time*0.1;
 
-	vec3 p = vec3(uv,time) / (1 - audio_amplitude_decay);
+	float internalSat = (1 + saturation);
+
+	float internalContrast = 1.0 + contrast;
+
+	vec3 p = vec3(uv,time);
 	vec3 axis = 4. * fbm(p, 0.5, 1.6);
 	
 	vec3 color = 0.5 * 5. * fbm(p*0.3,0.5,1.6);	
 	color = rotation(3.*length(axis),normalize(axis))*color;
-	color = applyContrastSaturationBrightness(color, 1 + contrast, 1 + saturation, 1);
+	color = applyContrastSaturationBrightness(color, internalContrast, internalSat, 1);
 
 	vec3 color_2  = color * 0.05;
-	color_2 = applyContrastSaturationBrightness(color_2, 1 + contrast, 1 + saturation, 1);
+	color_2 = applyContrastSaturationBrightness(color_2, internalContrast, internalSat, 1);
 
 	color_2 = pow(color_2,vec3(0.12));
 	color_2 *= 2.0 * color_2;
