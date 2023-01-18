@@ -1,6 +1,6 @@
 /*{
-    "CREDIT": "Do something cool",
-    "DESCRIPTION": "describe your material here",
+    "CREDIT": "Drew Andre",
+    "DESCRIPTION": "Solid Color",
     "TAGS": "graphic",
     "VSN": "1.0",
 	"RASTERISATION_SETTINGS": {

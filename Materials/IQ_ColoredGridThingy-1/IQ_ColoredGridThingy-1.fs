@@ -1,8 +1,8 @@
 /*{
     "CREDIT": "Drew Andre",
-    "DESCRIPTION": "noise",
-    "TAGS": "audio,reactive,noise",
-    "VSN": "1.0",
+    "TAGS": "graphics",
+    "VSN": "1.1",
+    "DESCRIPTION": "Automatically converted from https://www.shadertoy.com/view/4dBSRK by IQ.",
 	"RASTERISATION_SETTINGS": {
 	    "DEFAULT_RENDER_TO_TEXTURE": true,
 	    "DEFAULT_WIDTH": 1024,
@@ -15,33 +15,28 @@
             "TYPE": "audio"
         },
         {
-            "LABEL": "Public/Scale",
-            "NAME": "scale",
-            "TYPE": "float",
-            "MIN": 0.0,
-            "MAX": 1.0,
-            "DEFAULT": 0.33
-        },
-        {
             "LABEL": "Public/Speed",
-            "NAME": "zspeed",
+            "NAME": "mat_speed",
             "TYPE": "float",
             "MIN": 0.0,
             "MAX": 1.0,
-            "DEFAULT": 0.33
+            "DEFAULT": 0.5,
         },
         {
-            "LABEL": "Public/Front Color",
+            "LABEL" : "Public/Scale",
+            "NAME": "size",
+            "TYPE": "float",
+            "DEFAULT": 0.25,
+            "MIN": 0,
+            "MAX": 1
+        },
+        { "LABEL": "Public/Back Color", "NAME": "backgroundColor", "TYPE": "color", "DEFAULT": [ 0.0, 0.0, 0.0, 1.0 ] },
+		{
+			"LABEL": "Public/Front Color",
             "NAME": "foregroundColor",
             "TYPE": "color",
             "DEFAULT": [ 1.0, 1.0, 1.0, 1.0 ]
-        },
-        {
-            "LABEL": "Public/Back Color",
-            "NAME": "backgroundColor",
-            "TYPE": "color",
-            "DEFAULT": [ 0.0, 0.0, 0.0, 1.0 ]
-        },
+		},
 		{
 			"LABEL": "Public/Brightness",
 			"NAME": "brightness",
@@ -72,7 +67,15 @@
             "TYPE": "float",
             "MIN": 0.0,
             "MAX": 1.0,
-            "DEFAULT": 0.225
+            "DEFAULT": 0.05
+        },
+        {
+            "LABEL" : "Private/Dist",
+            "NAME": "dist",
+            "TYPE": "float",
+            "DEFAULT": 0.15,
+            "MIN": 0,
+            "MAX": 1
         },
 		{
             "LABEL": "Private/Amplitude",
@@ -86,7 +89,7 @@
             "LABEL": "Private/Audio Attack",
             "NAME": "attack",
             "TYPE": "float",
-            "DEFAULT": 0.1,
+            "DEFAULT": 0.5,
             "MIN": 0.0,
             "MAX": 1.0
         },
@@ -126,16 +129,6 @@
             }
         },
         {
-            "NAME": "xtime",
-            "TYPE": "time_base",
-            "PARAMS": {
-                "speed": "xspeed",
-                "speed_curve": 1,
-                "bpm_sync": false,
-                "link_speed_to_global_bpm": false
-            }
-        },
-        {
             "NAME": "ytime",
             "TYPE": "time_base",
             "PARAMS": {
@@ -146,30 +139,30 @@
             }
         },
         {
-            "NAME": "ztime",
+            "NAME": "mat_time",
             "TYPE": "time_base",
             "PARAMS": {
-                "speed": "zspeed",
+                "speed": "mat_speed",
                 "speed_curve": 1,
+                "reverse": true,
                 "bpm_sync": false,
-                "link_speed_to_global_bpm": false
+                "link_speed_to_global_bpm":false
             }
-        },
+        }
     ]
-}*/
+}
+*/
 
-#define SDF_ANTIALIASING_NONE 
+// IQ_ColoredGridThingy by mojovideotech
+// source : www.shadertoy.com/view/4dBSRK
+// created by IQ : www.iquilezles.org/
+// interactive mods by DoctorMojo : www.mojovideotech.com/
+
+// Originally Created by inigo quilez - iq/2014
+// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+
 
 #include "MadCommon.glsl"
-#include "MadNoise.glsl"
-
-vec4 getColor(vec4 colorRGBA1, vec4 colorRGBA2) {
-    float alpha = 1.0 - ((1.0 - colorRGBA1.a) * (1.0 - colorRGBA2.a) / 1.0);
-    float red   = (colorRGBA1.r * (1.0 - colorRGBA2.a) + colorRGBA2.r * colorRGBA2.a) / 1.0;
-    float green = (colorRGBA1.g * (1.0 - colorRGBA2.a) + colorRGBA2.g * colorRGBA2.a) / 1.0;
-    float blue  = (colorRGBA1.b * (1.0 - colorRGBA2.a) + colorRGBA2.b * colorRGBA2.a) / 1.0;
-    return vec4(red, green, blue, alpha);
-}
 
 vec4 applyColorMods(vec4 color, float c, float s, float b) {
 	float a = color.a;
@@ -177,30 +170,27 @@ vec4 applyColorMods(vec4 color, float c, float s, float b) {
 	return vec4(output_color.r, output_color.g, output_color.b, a);
 }
 
-vec4 materialColorForPixel(vec2 texCoord)
-{
-	float internalScale = scale * 3.0;
+vec4 materialColorForPixel( vec2 texCoord ) {
 
-    // Calculate UVs
-    vec3 uv = vec3(vec2(0.5) + (texCoord-vec2(0.5)) * internalScale * internalScale + vec2(0.0, -ytime), ztime);
+	vec2 seed = vec2(1.0, 1.0);
 
-    // Simplex Noise
-	// billowed noise
-    float n = ridgedNoise(uv);
+    vec2  px = (-size * 9)*(4*isf_FragNormCoord.xy);
 
-	vec4 mutableForegroundColor = foregroundColor.rgba;
-	mutableForegroundColor = applyColorMods(mutableForegroundColor, contrast, saturation, brightness);
+	float id = 0.5 + 0.5*cos(mat_time + sin(dot(floor(px+0.5),vec2(113.1*seed.x,17.81)))*43758.545*seed.y);
 
-	mutableForegroundColor.a -= 0.25;
-	mutableForegroundColor.a *= 1.0 + audio_amplitude_decay * (amplitude * 10);
+//     vec3  co = 0.5 + 0.5*cos(mat_time + 3.5*id + vec3(0.0,1.57,3.14) );
 
-	vec4 frontColor = getColor(mutableForegroundColor.rgba, backgroundColor.rgba);
+	vec4 mutableBackgroundColor = backgroundColor.rgba;
+//	mutableBackgroundColor.a -= 0.25;
+//	mutableBackgroundColor.a *= 1.0 + audio_amplitude_decay * (amplitude * 10);
 
-	vec4 backColor  = getColor(backgroundColor.rgba, mutableForegroundColor.rgba);
-	backColor = applyColorMods(backColor, contrast, saturation, brightness);
+	mutableBackgroundColor.r *= 1.0 + audio_amplitude_decay * (amplitude * 15);
+	mutableBackgroundColor.g *= 1.0 + audio_amplitude_decay * (amplitude * 15);
+	mutableBackgroundColor.b *= 1.0 + audio_amplitude_decay * (amplitude * 15);
 
-    // Interpolate Color
-    vec4 color      = mix(backColor.rgba, frontColor.rgba, n);
- 
-    return color;
+	vec4  co = mix(foregroundColor.rgba, mutableBackgroundColor.rgba, id);
+
+    vec2  pa = smoothstep( 0.0, 0.01 + (dist / 5), id*(0.5 + 0.5*cos(6.2831*px)) );
+
+    return applyColorMods(co*pa.x*pa.y, contrast, saturation, brightness);
 }

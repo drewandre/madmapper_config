@@ -41,22 +41,30 @@
             "NAME": "backgroundColor",
             "TYPE": "color",
             "DEFAULT": [ 0.0, 0.0, 1.0, 1.0 ]
-        },  
+        },
+		{
+			"LABEL": "Public/Brightness",
+			"NAME": "brightness",
+			"TYPE": "float",
+			"MIN": -1.0,
+			"MAX": 1.0,
+			"DEFAULT": 0
+		},
+		{
+			"LABEL": "Public/Saturation",
+			"NAME": "saturation",
+			"TYPE": "float",
+			"MIN": 0.0,
+			"MAX": 1.0,
+			"DEFAULT": 1.0
+		},
         {
-            "LABEL": "Private/Size",
-            "NAME": "size",
+            "LABEL": "Private/Speed Y",
+            "NAME": "yspeed",
             "TYPE": "float",
             "MIN": 0.0,
-            "MAX": 0.05,
-            "DEFAULT": 0.007
-        },
-        {
-            "LABEL": "Private/Step",
-            "NAME": "stepper",
-            "TYPE": "int",
-            "MIN": 1,
-            "MAX": 5,
-            "DEFAULT": 1
+            "MAX": 1.0,
+            "DEFAULT": 0.05
         },
         {
             "LABEL": "Private/Offset X",
@@ -67,12 +75,20 @@
             "DEFAULT": 0.040
         },
         {
-            "LABEL": "Private/Speed Y",
-            "NAME": "yspeed",
+            "LABEL": "Private/Size",
+            "NAME": "size",
             "TYPE": "float",
             "MIN": 0.0,
-            "MAX": 1.0,
-            "DEFAULT": 0.05
+            "MAX": 0.05,
+            "DEFAULT": 0 // 0.007
+        },
+        {
+            "LABEL": "Private/Step",
+            "NAME": "stepper",
+            "TYPE": "int",
+            "MIN": 1,
+            "MAX": 5,
+            "DEFAULT": 1
         },
 		{
             "LABEL": "Private/Amplitude",
@@ -176,6 +192,12 @@ float easeInOutQuart(float x) {
 	return x < 0.5 ? 8 * x * x * x * x : 1 - pow(-2 * x + 2, 4) / 2;
 }
 
+vec4 applyColorMods(vec4 color, float c, float s, float b) {
+	float a = color.a;
+	vec3 output_color = applyContrastSaturationBrightness(color.rgb, c + 1, s + 1, b + 1);
+	return vec4(output_color.r, output_color.g, output_color.b, a);
+}
+
 vec4 materialColorForPixel(vec2 texCoord)
 {
 	float internalScale = 0.5 + (scale * 2.0);
@@ -202,13 +224,17 @@ vec4 materialColorForPixel(vec2 texCoord)
 
 	vec4 fillColor = foregroundColor * billowedNoise(vec3(cellId, ztime));
 
-	fillColor.r *= 1.0 + (audio_amplitude_decay * (amplitude * 15));
-	fillColor.g *= 1.0 + (audio_amplitude_decay * (amplitude * 15));
-	fillColor.b *= 1.0 + (audio_amplitude_decay * (amplitude * 15));
+	fillColor.r *= 1.0 + (1.0 * audio_amplitude_decay * (amplitude * 15));
+	fillColor.g *= 1.0 + (1.0 * audio_amplitude_decay * (amplitude * 15));
+	fillColor.b *= 1.0 + (1.0 * audio_amplitude_decay * (amplitude * 15));
 	fillColor.a = easeInOutQuart(fillColor.a);
 
     vec4 color = fill(vec4(0), getColor(mutableBackgroundColor.rgba, fillColor.rgba), dist);
 	color = stroke(color, mutableBackgroundColor.rgba, dist, size);
 
-    return vec4(color);
+	vec4 out_color = color;
+
+	out_color += vec4(brightness);
+
+    return out_color;
 }
